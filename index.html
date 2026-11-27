@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Habit Tracker CLI | Favour Emmanuel</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Comfortaa', cursive, sans-serif;
+    }
+  </style>
+</head>
+<body class="bg-[#FDFBF7] text-[#4A5D4E] min-h-screen p-6 md:p-12">
+  <div class="max-w-4xl mx-auto space-y-6">
+    <!-- Header -->
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-2">
+      <div class="space-y-2">
+        <span class="inline-block text-xs font-semibold px-3 py-1 rounded-full bg-[#F4F1EA] border border-[#E3DEC3] text-[#4A5D4E]">
+          Tier 1 • TypeScript
+        </span>
+        <h1 class="text-2xl md:text-3xl font-bold text-[#3A4A3E]">
+          Habit Tracker CLI
+        </h1>
+      </div>
+      <a
+        href="https://fav-emmanuel.github.io/Personal-Website-Portfolio/"
+        class="self-start sm:self-auto inline-flex items-center gap-2 text-xs font-semibold px-4 py-2.5 rounded-xl bg-[#F4F1EA] border border-[#E3DEC3] text-[#3A4A3E] hover:bg-[#EBE6D8] transition"
+      >
+        ← Back to Home
+      </a>
+    </div>
+
+    <!-- Project Overview -->
+    <section class="bg-[#F4F1EA] p-6 md:p-8 rounded-2xl border border-[#E3DEC3] shadow-sm space-y-3">
+      <h2 class="text-lg font-bold text-[#3A4A3E]">Project Overview</h2>
+      <p class="text-sm leading-relaxed text-[#4A5D4E]">
+        The Habit Tracker CLI is a TypeScript habit and streak utility designed to track recurring daily routines, completion counts, and consistency streaks from a clean terminal-inspired workflow.
+      </p>
+    </section>
+
+    <!-- Live Trial Sandbox -->
+    <section class="bg-[#F4F1EA] p-6 md:p-8 rounded-2xl border border-[#E3DEC3] shadow-sm space-y-4">
+      <div>
+        <h2 class="text-lg font-bold text-[#3A4A3E]">Live Trial Sandbox</h2>
+        <p class="text-xs text-[#6A7A6E] mt-1">Add a habit and toggle completions to test streak tracking right here:</p>
+      </div>
+
+      <div class="bg-[#FAF7F0] p-5 rounded-xl border border-[#E3DEC3] space-y-4">
+        <form id="habitForm" class="flex flex-col sm:flex-row gap-3">
+          <input
+            id="habitInput"
+            type="text"
+            placeholder="New habit (e.g., Walking pad session)..."
+            required
+            class="flex-1 px-4 py-2.5 text-sm rounded-xl bg-[#FDFBF7] border border-[#E3DEC3] text-[#3A4A3E] placeholder-[#8C9A8E] focus:outline-none focus:border-[#4A5D4E]"
+          />
+          <button
+            type="submit"
+            class="px-4 py-2.5 text-xs font-semibold rounded-xl bg-[#4A5D4E] text-[#FDFBF7] hover:bg-[#3A4A3E] transition"
+          >
+            + Add Habit
+          </button>
+        </form>
+
+        <ul id="habitList" class="space-y-2 text-sm"></ul>
+      </div>
+    </section>
+
+    <!-- Implementation & Architecture -->
+    <section class="bg-[#F4F1EA] p-6 md:p-8 rounded-2xl border border-[#E3DEC3] shadow-sm space-y-4">
+      <h2 class="text-lg font-bold text-[#3A4A3E]">Implementation &amp; Architecture</h2>
+      <p class="text-sm leading-relaxed text-[#4A5D4E]">
+        Built in TypeScript with strongly typed habit state, streak counters, and command-style actions for logging completions and inspecting progress.
+      </p>
+      <div>
+        <a
+          href="https://github.com/fav-emmanuel/habit-tracker-cli"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-flex items-center gap-2 text-xs font-semibold px-4 py-2.5 rounded-xl bg-[#FAF7F0] border border-[#E3DEC3] text-[#3A4A3E] hover:bg-[#EBE6D8] transition"
+        >
+          View Source Code on GitHub →
+        </a>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const formEl = document.getElementById('habitForm');
+    const inputEl = document.getElementById('habitInput');
+    const listEl = document.getElementById('habitList');
+
+    const habits = [
+      { id: 1, name: 'Morning hydration', streak: 4, doneToday: false },
+      { id: 2, name: '30-min coding block', streak: 6, doneToday: true }
+    ];
+
+    function renderHabits() {
+      listEl.innerHTML = '';
+      habits.forEach((h) => {
+        const item = document.createElement('li');
+        item.className = 'flex items-center justify-between gap-3 px-4 py-2.5 rounded-xl bg-[#FDFBF7] border border-[#E3DEC3]';
+
+        const left = document.createElement('div');
+        left.className = 'flex items-center gap-3';
+
+        const check = document.createElement('input');
+        check.type = 'checkbox';
+        check.checked = h.doneToday;
+        check.className = 'w-4 h-4 accent-[#4A5D4E] cursor-pointer';
+        check.addEventListener('change', () => {
+          h.doneToday = check.checked;
+          h.streak += check.checked ? 1 : -1;
+          if (h.streak < 0) h.streak = 0;
+          renderHabits();
+        });
+
+        const title = document.createElement('span');
+        title.className = h.doneToday ? 'line-through text-[#6A7A6E]' : 'font-semibold text-[#3A4A3E]';
+        title.textContent = h.name;
+
+        left.append(check, title);
+
+        const right = document.createElement('div');
+        right.className = 'flex items-center gap-3';
+
+        const badge = document.createElement('span');
+        badge.className = 'text-xs font-semibold px-2.5 py-1 rounded-full bg-[#F4F1EA] border border-[#E3DEC3] text-[#4A5D4E]';
+        badge.textContent = `${h.streak} day streak`;
+
+        const delBtn = document.createElement('button');
+        delBtn.type = 'button';
+        delBtn.className = 'text-xs font-semibold text-[#6A7A6E] hover:text-[#3A4A3E] px-2 py-1';
+        delBtn.textContent = 'Remove';
+        delBtn.addEventListener('click', () => {
+          const idx = habits.findIndex((entry) => entry.id === h.id);
+          if (idx !== -1) {
+            habits.splice(idx, 1);
+            renderHabits();
+          }
+        });
+
+        right.append(badge, delBtn);
+        item.append(left, right);
+        listEl.appendChild(item);
+      });
+    }
+
+    formEl.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = inputEl.value.trim();
+      if (!name) return;
+      habits.unshift({ id: Date.now(), name, streak: 1, doneToday: true });
+      inputEl.value = '';
+      renderHabits();
+    });
+
+    renderHabits();
+  </script>
+</body>
+</html>
