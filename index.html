@@ -38,35 +38,85 @@
     <section class="bg-[#F4F1EA] p-6 md:p-8 rounded-2xl border border-[#E3DEC3] shadow-sm space-y-3">
       <h2 class="text-lg font-bold text-[#3A4A3E]">Project Overview</h2>
       <p class="text-sm leading-relaxed text-[#4A5D4E]">
-        The Habit Tracker CLI is a TypeScript habit and streak utility designed to track recurring daily routines, completion counts, and consistency streaks from a clean terminal-inspired workflow.
+        The Habit Tracker CLI is a TypeScript habit and streak utility engineered to track recurring routines, weekly targets, category filters, and streak consistency—paired here with an interactive browser sandbox backed by local storage.
       </p>
     </section>
 
     <!-- Live Trial Sandbox -->
-    <section class="bg-[#F4F1EA] p-6 md:p-8 rounded-2xl border border-[#E3DEC3] shadow-sm space-y-4">
-      <div>
-        <h2 class="text-lg font-bold text-[#3A4A3E]">Live Trial Sandbox</h2>
-        <p class="text-xs text-[#6A7A6E] mt-1">Add a habit and toggle completions to test streak tracking right here:</p>
+    <section class="bg-[#F4F1EA] p-6 md:p-8 rounded-2xl border border-[#E3DEC3] shadow-sm space-y-5">
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+        <div>
+          <h2 class="text-lg font-bold text-[#3A4A3E]">Live Trial Sandbox</h2>
+          <p class="text-xs text-[#6A7A6E] mt-1">Create habits with weekly targets, toggle today's status, filter by category, or simulate a CLI command.</p>
+        </div>
+        <span id="completionSummary" class="text-xs font-semibold px-3 py-1.5 rounded-full bg-[#FAF7F0] border border-[#E3DEC3] text-[#3A4A3E]"></span>
       </div>
 
-      <div class="bg-[#FAF7F0] p-5 rounded-xl border border-[#E3DEC3] space-y-4">
-        <form id="habitForm" class="flex flex-col sm:flex-row gap-3">
-          <input
-            id="habitInput"
-            type="text"
-            placeholder="New habit (e.g., Walking pad session)..."
-            required
-            class="flex-1 px-4 py-2.5 text-sm rounded-xl bg-[#FDFBF7] border border-[#E3DEC3] text-[#3A4A3E] placeholder-[#8C9A8E] focus:outline-none focus:border-[#4A5D4E]"
-          />
-          <button
-            type="submit"
-            class="px-4 py-2.5 text-xs font-semibold rounded-xl bg-[#4A5D4E] text-[#FDFBF7] hover:bg-[#3A4A3E] transition"
-          >
-            + Add Habit
-          </button>
-        </form>
+      <!-- Add Habit Form -->
+      <form id="habitForm" class="bg-[#FAF7F0] p-4 rounded-xl border border-[#E3DEC3] grid grid-cols-1 sm:grid-cols-12 gap-3">
+        <input
+          id="habitName"
+          type="text"
+          placeholder="Habit name (e.g., Read 15 pages)..."
+          required
+          class="sm:col-span-5 px-3.5 py-2.5 text-xs sm:text-sm rounded-xl bg-[#FDFBF7] border border-[#E3DEC3] text-[#3A4A3E] placeholder-[#8C9A8E] focus:outline-none focus:border-[#4A5D4E]"
+        />
+        <select
+          id="habitCategory"
+          class="sm:col-span-3 px-3 py-2.5 text-xs sm:text-sm rounded-xl bg-[#FDFBF7] border border-[#E3DEC3] text-[#3A4A3E] focus:outline-none focus:border-[#4A5D4E]"
+        >
+          <option value="Wellness">Wellness</option>
+          <option value="Coding">Coding</option>
+          <option value="Study">Study</option>
+          <option value="Life Admin">Life Admin</option>
+        </select>
+        <select
+          id="habitTarget"
+          class="sm:col-span-2 px-2.5 py-2.5 text-xs sm:text-sm rounded-xl bg-[#FDFBF7] border border-[#E3DEC3] text-[#3A4A3E] focus:outline-none focus:border-[#4A5D4E]"
+        >
+          <option value="7">7x / wk</option>
+          <option value="5" selected>5x / wk</option>
+          <option value="3">3x / wk</option>
+          <option value="1">1x / wk</option>
+        </select>
+        <button
+          type="submit"
+          class="sm:col-span-2 px-4 py-2.5 text-xs font-semibold rounded-xl bg-[#4A5D4E] text-[#FDFBF7] hover:bg-[#3A4A3E] transition"
+        >
+          + Add
+        </button>
+      </form>
 
-        <ul id="habitList" class="space-y-2 text-sm"></ul>
+      <!-- Filters & Actions -->
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <div id="categoryFilters" class="flex flex-wrap gap-1.5"></div>
+        <div class="flex items-center gap-2">
+          <button
+            id="resetWeekBtn"
+            type="button"
+            class="text-xs font-semibold px-3 py-1.5 rounded-xl bg-[#FAF7F0] border border-[#E3DEC3] text-[#4A5D4E] hover:bg-[#EBE6D8] transition"
+          >
+            Reset Defaults
+          </button>
+        </div>
+      </div>
+
+      <!-- Habit Cards -->
+      <ul id="habitList" class="space-y-3"></ul>
+
+      <!-- CLI Command Preview -->
+      <div class="bg-[#FAF7F0] p-4 rounded-xl border border-[#E3DEC3] space-y-2">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-semibold text-[#3A4A3E]">Equivalent CLI Command</span>
+          <button
+            id="copyCliBtn"
+            type="button"
+            class="text-xs font-semibold text-[#4A5D4E] hover:underline"
+          >
+            Copy
+          </button>
+        </div>
+        <code id="cliPreview" class="block text-xs text-[#4A5D4E] bg-[#FDFBF7] px-3 py-2 rounded-lg border border-[#E3DEC3] overflow-x-auto"></code>
       </div>
     </section>
 
@@ -74,7 +124,7 @@
     <section class="bg-[#F4F1EA] p-6 md:p-8 rounded-2xl border border-[#E3DEC3] shadow-sm space-y-4">
       <h2 class="text-lg font-bold text-[#3A4A3E]">Implementation &amp; Architecture</h2>
       <p class="text-sm leading-relaxed text-[#4A5D4E]">
-        Built in TypeScript with strongly typed habit state, streak counters, and command-style actions for logging completions and inspecting progress.
+        Built in TypeScript with strongly typed habit records, streak counters, weekly target ratios, and structured command handlers for creating, completing, listing, and pruning habits.
       </p>
       <div>
         <a
@@ -90,76 +140,230 @@
   </div>
 
   <script>
-    const formEl = document.getElementById('habitForm');
-    const inputEl = document.getElementById('habitInput');
-    const listEl = document.getElementById('habitList');
+    const STORAGE_KEY = 'fav_emmanuel_habit_sandbox_v1';
+    const CATEGORIES = ['All', 'Wellness', 'Coding', 'Study', 'Life Admin'];
 
-    const habits = [
-      { id: 1, name: 'Morning hydration', streak: 4, doneToday: false },
-      { id: 2, name: '30-min coding block', streak: 6, doneToday: true }
+    const DEFAULT_HABITS = [
+      { id: 1, name: 'Indoor walking session', category: 'Wellness', targetPerWeek: 5, completedThisWeek: 4, streak: 6, doneToday: true },
+      { id: 2, name: 'Commit code to GitHub', category: 'Coding', targetPerWeek: 5, completedThisWeek: 3, streak: 4, doneToday: false },
+      { id: 3, name: 'Review lecture notes', category: 'Study', targetPerWeek: 3, completedThisWeek: 2, streak: 2, doneToday: false }
     ];
 
+    let habits = loadHabits();
+    let activeCategory = 'All';
+    let lastCliCommand = 'habit-cli add "Indoor walking session" --cat Wellness --target 5';
+
+    const formEl = document.getElementById('habitForm');
+    const nameEl = document.getElementById('habitName');
+    const catEl = document.getElementById('habitCategory');
+    const targetEl = document.getElementById('habitTarget');
+    const filtersEl = document.getElementById('categoryFilters');
+    const listEl = document.getElementById('habitList');
+    const summaryEl = document.getElementById('completionSummary');
+    const cliPreviewEl = document.getElementById('cliPreview');
+    const copyCliBtn = document.getElementById('copyCliBtn');
+    const resetWeekBtn = document.getElementById('resetWeekBtn');
+
+    function loadHabits() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return structuredClone(DEFAULT_HABITS);
+        const parsed = JSON.parse(raw);
+        return Array.isArray(parsed) && parsed.length ? parsed : structuredClone(DEFAULT_HABITS);
+      } catch {
+        return structuredClone(DEFAULT_HABITS);
+      }
+    }
+
+    function saveHabits() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(habits));
+      } catch {
+        // Ignore storage quota errors in restricted contexts
+      }
+    }
+
+    function renderFilters() {
+      filtersEl.innerHTML = '';
+      CATEGORIES.forEach((cat) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        const isActive = activeCategory === cat;
+        btn.className = isActive
+          ? 'text-xs font-semibold px-3 py-1.5 rounded-xl bg-[#4A5D4E] text-[#FDFBF7] transition'
+          : 'text-xs font-semibold px-3 py-1.5 rounded-xl bg-[#FAF7F0] border border-[#E3DEC3] text-[#4A5D4E] hover:bg-[#EBE6D8] transition';
+        btn.textContent = cat;
+        btn.addEventListener('click', () => {
+          activeCategory = cat;
+          renderAll();
+        });
+        filtersEl.appendChild(btn);
+      });
+    }
+
+    function renderSummary() {
+      const total = habits.length;
+      const done = habits.filter((h) => h.doneToday).length;
+      summaryEl.textContent = `Today: ${done} / ${total} completed`;
+    }
+
     function renderHabits() {
+      const visible = activeCategory === 'All'
+        ? habits
+        : habits.filter((h) => h.category === activeCategory);
+
       listEl.innerHTML = '';
-      habits.forEach((h) => {
+      if (visible.length === 0) {
+        const empty = document.createElement('li');
+        empty.className = 'px-4 py-4 rounded-xl bg-[#FAF7F0] border border-[#E3DEC3] text-xs text-[#6A7A6E]';
+        empty.textContent = `No habits in "${activeCategory}" yet.`;
+        listEl.appendChild(empty);
+        return;
+      }
+
+      visible.forEach((h) => {
+        const pct = Math.min(100, Math.round((h.completedThisWeek / Math.max(1, h.targetPerWeek)) * 100));
+
         const item = document.createElement('li');
-        item.className = 'flex items-center justify-between gap-3 px-4 py-2.5 rounded-xl bg-[#FDFBF7] border border-[#E3DEC3]';
+        item.className = 'p-4 rounded-xl bg-[#FAF7F0] border border-[#E3DEC3] space-y-3';
+
+        const topRow = document.createElement('div');
+        topRow.className = 'flex flex-wrap items-center justify-between gap-2';
 
         const left = document.createElement('div');
         left.className = 'flex items-center gap-3';
 
-        const check = document.createElement('input');
-        check.type = 'checkbox';
-        check.checked = h.doneToday;
-        check.className = 'w-4 h-4 accent-[#4A5D4E] cursor-pointer';
-        check.addEventListener('change', () => {
-          h.doneToday = check.checked;
-          h.streak += check.checked ? 1 : -1;
-          if (h.streak < 0) h.streak = 0;
-          renderHabits();
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.checked = h.doneToday;
+        checkbox.className = 'w-4 h-4 accent-[#4A5D4E] cursor-pointer';
+        checkbox.addEventListener('change', () => {
+          h.doneToday = checkbox.checked;
+          if (checkbox.checked) {
+            h.streak += 1;
+            h.completedThisWeek = Math.min(h.targetPerWeek, h.completedThisWeek + 1);
+            lastCliCommand = `habit-cli complete "${h.name}" --today`;
+          } else {
+            h.streak = Math.max(0, h.streak - 1);
+            h.completedThisWeek = Math.max(0, h.completedThisWeek - 1);
+            lastCliCommand = `habit-cli undo "${h.name}" --today`;
+          }
+          saveHabits();
+          renderAll();
         });
 
+        const titleWrap = document.createElement('div');
         const title = document.createElement('span');
-        title.className = h.doneToday ? 'line-through text-[#6A7A6E]' : 'font-semibold text-[#3A4A3E]';
+        title.className = h.doneToday
+          ? 'line-through text-sm text-[#6A7A6E]'
+          : 'font-semibold text-sm text-[#3A4A3E]';
         title.textContent = h.name;
 
-        left.append(check, title);
+        const catTag = document.createElement('span');
+        catTag.className = 'ml-2 text-[11px] font-semibold px-2 py-0.5 rounded-full bg-[#F4F1EA] border border-[#E3DEC3] text-[#4A5D4E]';
+        catTag.textContent = h.category;
+
+        titleWrap.append(title, catTag);
+        left.append(checkbox, titleWrap);
 
         const right = document.createElement('div');
-        right.className = 'flex items-center gap-3';
+        right.className = 'flex items-center gap-2';
 
-        const badge = document.createElement('span');
-        badge.className = 'text-xs font-semibold px-2.5 py-1 rounded-full bg-[#F4F1EA] border border-[#E3DEC3] text-[#4A5D4E]';
-        badge.textContent = `${h.streak} day streak`;
+        const streakPill = document.createElement('span');
+        streakPill.className = 'text-xs font-semibold px-2.5 py-1 rounded-full bg-[#FDFBF7] border border-[#E3DEC3] text-[#3A4A3E]';
+        streakPill.textContent = `${h.streak}d streak`;
 
         const delBtn = document.createElement('button');
         delBtn.type = 'button';
         delBtn.className = 'text-xs font-semibold text-[#6A7A6E] hover:text-[#3A4A3E] px-2 py-1';
-        delBtn.textContent = 'Remove';
+        delBtn.textContent = 'Delete';
         delBtn.addEventListener('click', () => {
-          const idx = habits.findIndex((entry) => entry.id === h.id);
-          if (idx !== -1) {
-            habits.splice(idx, 1);
-            renderHabits();
-          }
+          habits = habits.filter((entry) => entry.id !== h.id);
+          lastCliCommand = `habit-cli remove "${h.name}"`;
+          saveHabits();
+          renderAll();
         });
 
-        right.append(badge, delBtn);
-        item.append(left, right);
+        right.append(streakPill, delBtn);
+        topRow.append(left, right);
+
+        // Weekly progress bar
+        const progressWrap = document.createElement('div');
+        progressWrap.className = 'space-y-1';
+
+        const progressLabel = document.createElement('div');
+        progressLabel.className = 'flex justify-between text-[11px] text-[#6A7A6E]';
+        progressLabel.innerHTML = `<span>Weekly goal: ${h.completedThisWeek}/${h.targetPerWeek}</span><span>${pct}%</span>`;
+
+        const track = document.createElement('div');
+        track.className = 'w-full h-2 rounded-full bg-[#E3DEC3]/60 overflow-hidden';
+
+        const fill = document.createElement('div');
+        fill.className = 'h-full bg-[#4A5D4E] transition-all duration-300';
+        fill.style.width = `${pct}%`;
+
+        track.appendChild(fill);
+        progressWrap.append(progressLabel, track);
+
+        item.append(topRow, progressWrap);
         listEl.appendChild(item);
       });
     }
 
+    function renderCliPreview() {
+      cliPreviewEl.textContent = `$ ${lastCliCommand}`;
+    }
+
+    function renderAll() {
+      renderFilters();
+      renderSummary();
+      renderHabits();
+      renderCliPreview();
+    }
+
     formEl.addEventListener('submit', (e) => {
       e.preventDefault();
-      const name = inputEl.value.trim();
+      const name = nameEl.value.trim();
+      const category = catEl.value;
+      const targetPerWeek = parseInt(targetEl.value, 10) || 5;
       if (!name) return;
-      habits.unshift({ id: Date.now(), name, streak: 1, doneToday: true });
-      inputEl.value = '';
-      renderHabits();
+
+      habits.unshift({
+        id: Date.now(),
+        name,
+        category,
+        targetPerWeek,
+        completedThisWeek: 1,
+        streak: 1,
+        doneToday: true
+      });
+      lastCliCommand = `habit-cli add "${name}" --cat "${category}" --target ${targetPerWeek}`;
+      nameEl.value = '';
+      saveHabits();
+      renderAll();
     });
 
-    renderHabits();
+    copyCliBtn.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(lastCliCommand);
+        copyCliBtn.textContent = 'Copied!';
+        setTimeout(() => {
+          copyCliBtn.textContent = 'Copy';
+        }, 1200);
+      } catch {
+        // Fallback ignored
+      }
+    });
+
+    resetWeekBtn.addEventListener('click', () => {
+      habits = structuredClone(DEFAULT_HABITS);
+      activeCategory = 'All';
+      lastCliCommand = 'habit-cli reset --defaults';
+      saveHabits();
+      renderAll();
+    });
+
+    renderAll();
   </script>
 </body>
 </html>
